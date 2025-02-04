@@ -96,7 +96,8 @@ if __name__ == '__main__':
 
     while True:
         Quary = PersonCommand().split()
-
+        if Quary[0] == 'Close':
+            break
 
         if Quary[0] == ActivationWord:
             Quary.pop(0)
@@ -119,3 +120,4 @@ if __name__ == '__main__':
             if Quary[0] == 'wikipedia':
                 Quary = ' '.join(Quary[1:])
                 speak('Qquarying the universal databacnk')
+                search_wikipedia(Quary[1:])
