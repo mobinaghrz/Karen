@@ -48,6 +48,7 @@ python karen.py
 | `Close` | Exits the Karen voice assistant program |
 
 ### Examples
+
 ```bash
 User: "Karen go to github.com"
 Karen: "Opening..."
