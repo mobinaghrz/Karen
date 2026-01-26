@@ -10,43 +10,35 @@ import wolframalpha
 # set the path
 chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 webbrowser.register('chrome',None, webbrowser.BackgroundBrowser(chrome_path))
-#speech engine initialsation (pyttsx3)
 
+#speech engine initialsation (pyttsx3)
 Engine = pyttsx3.init() # object creation
 
 #""" RATE"""
-
 rate = Engine.getProperty('rate')   # getting details of current speaking rate
 #print (rate)                        #printing current voice rate
 
 #"""VOLUME"""
-
 volume = Engine.getProperty('volume')   #getting to know current volume level (min=0 and max=1)
 #print (volume)                          #printing current volume level
 Engine.setProperty('volume',0.5)    # setting up volume level  between 0 and 1
 
-
 Voice = Engine.getProperty('voices')
 Engine.setProperty('voice',Voice[1].id) # 0 = male , 1 = female
-ActivationWord = "Karen" # single word
 
+ActivationWord = "Karen" # single word
 
 #"""Saving Voice to a file"""
 Engine.save_to_file('Hello World', 'test.mp3')
 Engine.runAndWait()
 
-
-
 def speak(text,rate = 125): #set speaking rate voice
     Engine.setProperty('rate',rate)
     if text  == 'all system nominal.':
         Engine.say("Hello Miss, this is karen")
-
     elif text == 'greeting':
-        Engine.say()
-
+        Engine.say("greeting, all.")
     else: Engine.say(text)
-
     Engine.runAndWait()
     
     
@@ -57,13 +49,11 @@ def PersonCommand():
     with sr.Microphone() as source :
         listener.pause_threshold = 2
         input_speech = listener.listen(source)
-
     try:
         print('Recogniza speech')
         Quary = listener.recognize_google(input_speech, language ='en_gb')
         print(f'the input speech was:{Quary}')
         
-
     except Exception as exception:
         print('i did not catch that')
         speak('i did not catch that')
@@ -84,28 +74,38 @@ def search_wikipedia(Quary = ''):
     wikisummery = str(wikipage.summary)
     return wikisummery
 
-
 def analysis(given):
-    pass
-
-
+    # Wolfram Alpha integration
+    client = wolframalpha.Client('YOUR_WOLFRAM_ALPHA_API_KEY')
+    res = client.query(given)
+    try:
+        answer = next(res.results).text
+        return answer
+    except:
+        return "Could not compute"
 
 #main Loop
 if __name__ == '__main__':
     speak('all system nominal.')
-
     while True:
-        Quary = PersonCommand().split()
+        Quary = PersonCommand()
+        
+        if Quary == 'None':
+            continue
+            
+        Quary = Quary.split()
+        
         if Quary[0] == 'Close':
+            speak('Goodbye')
             break
-
+            
         if Quary[0] == ActivationWord:
             Quary.pop(0)
             
             #list commaands
             if Quary[0] == 'say':
                 if 'hello' in Quary:
-                    speak('greeting,all.')
+                    speak('greeting')
                 else:
                     Quary.pop(0)
                     speech = ' '.join(Quary)
@@ -119,5 +119,7 @@ if __name__ == '__main__':
             #wikipedia
             if Quary[0] == 'wikipedia':
                 Quary = ' '.join(Quary[1:])
-                speak('Qquarying the universal databacnk')
-                search_wikipedia(Quary[1:])
+                speak('Querying the universal databank')
+                result = search_wikipedia(Quary)
+                speak(result)
+                print(result)
